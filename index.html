@@ -1,0 +1,390 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Radar TI</title>
+<meta name="description" content="Uma reportagem por dia sobre IA, gestão de TI e ITSM, e uma aula por dia sobre o negócio de provedores de internet.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: caderno de uma coluna com duas abas (Notícias e Aulas de ISP), faixa de datas no topo, no clima de uma sala de operação de rede */
+:root{
+  --bg:#eef3f3; --surface:#ffffff; --fg:#10201f; --muted:#4f6360; --line:#d3dedd;
+  --accent:#0a7c76; --accent-soft:#dff2f0; --accent-ink:#ffffff; --bar:#a9cbc7;
+  --owner:#a24a05; --owner-soft:#fdf0dd; --board:#2d4fa3; --board-soft:#e8eefb;
+  --ok:#17804a; --ok-soft:#e2f4ea; --todo:#8a5a00; --todo-soft:#fdf0db; --why:#eaf4f3;
+  --t0:#0a7c76; --t1:#2d4fa3; --t2:#a24a05; --t3:#7a3fa8; --t4:#b03a48; --t5:#4d7a1b;
+  --font-display:"Familjen Grotesk","Segoe UI",system-ui,sans-serif;
+  --font-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0a1517; --surface:#112124; --fg:#e4efee; --muted:#93aaa7; --line:#1f3538;
+  --accent:#5ccabf; --accent-soft:#12312f; --accent-ink:#06201e; --bar:#2c5855;
+  --owner:#f2b266; --owner-soft:#33260f; --board:#9db6ff; --board-soft:#18244a;
+  --ok:#5fd394; --ok-soft:#123224; --todo:#f0b65a; --todo-soft:#3a2a10; --why:#0f2a2c;
+  --t0:#5ccabf; --t1:#9db6ff; --t2:#f2b266; --t3:#c9a2f0; --t4:#ff9aa5; --t5:#a8d66b;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0a1517; --surface:#112124; --fg:#e4efee; --muted:#93aaa7; --line:#1f3538;
+  --accent:#5ccabf; --accent-soft:#12312f; --accent-ink:#06201e; --bar:#2c5855;
+  --owner:#f2b266; --owner-soft:#33260f; --board:#9db6ff; --board-soft:#18244a;
+  --ok:#5fd394; --ok-soft:#123224; --todo:#f0b65a; --todo-soft:#3a2a10; --why:#0f2a2c;
+  --t0:#5ccabf; --t1:#9db6ff; --t2:#f2b266; --t3:#c9a2f0; --t4:#ff9aa5; --t5:#a8d66b;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px}
+.wrap{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.label{font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header.top{display:flex;flex-direction:column;gap:14px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand svg{flex:0 0 auto;width:54px;height:30px;color:var(--accent)}
+.brand h1{font-family:var(--font-display);font-weight:700;font-size:clamp(2rem,7vw,2.9rem);line-height:1;margin:0;letter-spacing:-.02em}
+.brand h1 span{color:var(--accent)}
+.tools{display:flex;gap:8px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:7px 11px;font-family:var(--font-mono);font-size:.8rem;font-weight:600;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.iconbtn{width:38px;height:36px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer}
+.iconbtn svg{width:18px;height:18px}
+.sub{margin:0;color:var(--muted);max-width:60ch}
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--line)}
+.tab{border:0;background:transparent;padding:10px 16px;font-family:var(--font-display);font-weight:700;font-size:1.05rem;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px}
+.tab[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.progress{display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:.78rem;color:var(--muted)}
+.progress .track{flex:1 1 auto;max-width:220px;height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress .fill{height:100%;background:var(--accent);border-radius:99px}
+.search input{width:100%;font:inherit;font-size:1rem;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.ed{flex:0 0 auto;min-width:96px;text-align:left;padding:8px 11px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;display:flex;flex-direction:column;gap:2px;font-family:var(--font-mono);font-size:.82rem}
+.ed small{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:5px}
+.ed .dot{width:7px;height:7px;border-radius:50%;background:var(--todo)}
+.ed .dot.ok{background:var(--ok)}
+.ed[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:.88rem;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:transparent;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.chip i{width:8px;height:8px;border-radius:50%;background:var(--c,var(--muted))}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.head{display:flex;flex-direction:column;gap:10px;border-top:3px solid var(--fg);padding-top:16px}
+.head .row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:space-between}
+.kicker{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.num{font-family:var(--font-mono);font-weight:600;font-size:.85rem;background:var(--fg);color:var(--bg);padding:3px 9px;border-radius:6px}
+.trk{font-family:var(--font-mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600;color:var(--c)}
+.head h2{font-family:var(--font-display);font-weight:700;font-size:clamp(1.6rem,5vw,2.2rem);line-height:1.12;margin:0;text-wrap:balance;letter-spacing:-.01em}
+.head .lede{margin:0;font-size:1.12rem;color:var(--muted);text-wrap:pretty}
+.pill{font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;padding:4px 9px;border-radius:999px;background:var(--todo-soft);color:var(--todo)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.btn{font-size:.88rem;font-weight:700;padding:8px 13px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.55;cursor:wait}
+.status{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 13px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.stat b{font-family:var(--font-display);font-weight:700;font-size:1.7rem;line-height:1.05;color:var(--accent);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.stat span{font-size:.82rem;color:var(--muted);line-height:1.3}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card h3,.blk h3{font-family:var(--font-display);font-weight:700;font-size:1.25rem;margin:0;line-height:1.2}
+.chart{display:flex;flex-direction:column;gap:8px}
+.crow{display:grid;grid-template-columns:84px 1fr 54px;align-items:center;gap:10px;font-size:.9rem}
+.crow .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crow .tr{height:18px;background:var(--line);border-radius:4px;overflow:hidden}
+.crow .fl{height:100%;background:var(--bar);border-radius:4px}
+.crow.hi .fl{background:var(--accent)}
+.crow .vl{font-family:var(--font-mono);font-size:.82rem;text-align:right;font-variant-numeric:tabular-nums}
+.note{font-size:.84rem;color:var(--muted);margin:0}
+.blk{display:flex;flex-direction:column;gap:10px}
+.blk p{margin:0;max-width:66ch;overflow-wrap:anywhere}
+.blk ul{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:9px;max-width:66ch}
+.blk li::marker{color:var(--accent)}
+.call{border-radius:10px;padding:15px 17px;display:flex;flex-direction:column;gap:6px}
+.call .label{color:inherit;opacity:.9;font-weight:600}
+.call p{margin:0;font-size:1.05rem;max-width:66ch}
+.call.owner{background:var(--owner-soft);color:var(--fg);border-left:4px solid var(--owner)}
+.call.owner .label{color:var(--owner)}
+.call.board{background:var(--board-soft);border-left:4px solid var(--board)}
+.call.board .label{color:var(--board)}
+.call.board p{font-style:italic}
+.call.act{background:var(--board-soft);border-left:4px solid var(--board)}
+.call.act .label{color:var(--board)}
+.ask{border:1px dashed var(--accent);border-radius:10px;padding:15px 17px}
+.ask p{margin:4px 0 0;font-size:1.08rem;font-style:italic}
+dl.gl{margin:0;display:grid;gap:10px}
+dl.gl div{display:grid;gap:2px}
+dl.gl dt{font-family:var(--font-mono);font-size:.8rem;font-weight:600;color:var(--accent)}
+dl.gl dd{margin:0;font-size:.97rem}
+.next{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--line)}
+.src ul{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:5px;font-size:.92rem}
+.src a{color:var(--accent);overflow-wrap:anywhere}
+.empty{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:30px 20px;text-align:center;color:var(--muted)}
+.empty strong{display:block;color:var(--fg);font-family:var(--font-display);font-size:1.25rem;margin-bottom:6px}
+.hit{text-align:left;width:100%;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:8px;padding:13px 15px;cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.hit b{font-family:var(--font-display);font-size:1.1rem}
+.hit span{color:var(--muted);font-size:.92rem}
+.news{display:flex;flex-direction:column;gap:14px}
+article.item{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:8px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+article.item h3{margin:0;font-family:var(--font-display);font-weight:700;font-size:1.3rem;line-height:1.25;text-wrap:balance}
+.meta{font-family:var(--font-mono);font-size:.75rem;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+.meta .tag{font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--c)}
+.item p{margin:0;overflow-wrap:anywhere;max-width:68ch}
+.why{background:var(--why);border-radius:8px;padding:11px 14px;display:flex;flex-direction:column;gap:6px}
+.why b{font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--accent)}
+.item a.lnk{font-size:.9rem;color:var(--accent);font-weight:700;text-decoration:none;align-self:flex-start}
+.item a.lnk:hover{text-decoration:underline}
+.foot{border-top:1px solid var(--line);padding-top:14px;color:var(--muted);font-size:.85rem;max-width:66ch}
+main{display:flex;flex-direction:column;gap:20px;min-width:0}
+@media (prefers-reduced-motion:no-preference){.fl{transition:width .5s ease}.ed,.chip,.btn,.tab{transition:background .15s,border-color .15s}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="bar">
+      <div class="brand">
+        <svg viewBox="0 0 54 30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 15h11l4-10 7 20 5-14 3 4h20"/></svg>
+        <h1>Radar<span>.</span>TI</h1>
+      </div>
+      <div class="tools">
+        <div class="seg" id="langseg" role="group" aria-label="Idioma / Language">
+          <button id="lpt" type="button">PT</button><button id="len" type="button">EN</button>
+        </div>
+        <button class="iconbtn" id="theme" type="button"></button>
+      </div>
+    </div>
+    <p class="sub" id="sub"></p>
+    <div class="tabs" role="tablist" id="tabs">
+      <button class="tab" id="tnews" role="tab" type="button"></button>
+      <button class="tab" id="tless" role="tab" type="button"></button>
+    </div>
+    <div class="progress" id="prog"></div>
+    <label class="search" for="q"><span class="label" id="lq"></span>
+      <input id="q" type="search" autocomplete="off">
+    </label>
+  </header>
+  <div>
+    <div class="label" id="ledtitle" style="margin-bottom:6px"></div>
+    <div class="strip" id="strip" role="group"></div>
+  </div>
+  <div class="filters" id="filters" role="group"></div>
+  <main id="main"></main>
+  <footer class="foot" id="foot"></footer>
+</div>
+
+<script>
+const UI={
+  pt:{subN:"Uma reportagem por dia, às 7h, sobre IA, gestão de TI e de serviços (ITSM). Quando há notícia relevante de provedores de internet, ela entra junto.",
+    subA:"Uma aula por dia, às 7h, sobre o negócio de provedores de internet: mercado, métricas, gestão, tecnologia e futuro.",
+    tabN:"Notícias",tabA:"Aulas de ISP",
+    searchN:"Buscar em todas as edições",phN:"ex.: ITIL, IA no suporte, Anatel",editions:"Edições",
+    searchA:"Buscar em todas as aulas",phA:"ex.: churn, ARPU, Claro, fibra",lessons:"Aulas",all:"Todas",
+    lesson:"Aula",studied:"Estudada",todo:"Para estudar",mark:"Marcar como estudada",unmark:"Desmarcar",
+    nums:"Números",owner:"Visão de dono",board:"Para levar à diretoria",ask:"Para pensar",
+    gloss:"Glossário rápido",next:"Próxima aula",src:"Fontes",
+    loading:"Carregando...",noneA:"Nenhuma aula ainda",noneASub:"A primeira aula aparece aqui todo dia às 7h.",
+    noneN:"Nenhuma edição ainda",noneNSub:"A primeira edição aparece aqui amanhã às 7h.",
+    fail:"Não deu para carregar",failSub:"Recarregue a página em instantes.",
+    res:n=>n+(n===1?" resultado":" resultados"),nores:"Nada encontrado",noresSub:"Tente outro termo ou limpe a busca.",
+    noTrack:"Sem aulas nesta trilha",noTrackSub:"Escolha outra trilha ou volte para Todas.",
+    noTag:"Sem edições deste assunto",noTagSub:"Escolha outro assunto ou volte para Todas.",
+    saveErr:"Não foi possível salvar agora. Tente de novo em instantes.",ownerOnly:"Só o dono do site pode alterar isso.",
+    progress:(a,b)=>a+" de "+b+" aulas estudadas",themeL:"Alternar tema claro e escuro",
+    approved:"Aprovada",draft:"Rascunho",approve:"Aprovar edição",backDraft:"Voltar para rascunho",
+    lic:"Lição de gestão",act:"Para quem lidera uma equipe de TI",read:"Ler na fonte",theme:"Tema da semana",postIdea:"Ideia de post: ",
+    onlyPt:"Esta edição existe só em português.",about:"Site de estudos e notícias sobre IA, gestão de TI, ITSM e o mercado de provedores de internet. Conteúdo produzido com apoio de inteligência artificial a partir de fontes públicas, que ficam listadas em cada texto. Confira nas fontes antes de usar.",edition:"Edição",loc:"pt-BR"},
+  en:{subN:"One report a day, at 7am, on AI, IT and service management (ITSM). When there is relevant news from internet providers, it joins in.",
+    subA:"One lesson a day, at 7am, on the internet service provider business: market, metrics, management, technology and future. ",
+    tabN:"News",tabA:"ISP lessons",
+    searchN:"Search all editions",phN:"e.g. ITIL, AI in support, Anatel",editions:"Editions",
+    searchA:"Search all lessons",phA:"e.g. churn, ARPU, Claro, fiber",lessons:"Lessons",all:"All",
+    lesson:"Lesson",studied:"Studied",todo:"To study",mark:"Mark as studied",unmark:"Unmark",
+    nums:"Numbers",owner:"Owner's view",board:"To bring to the board",ask:"To think about",
+    gloss:"Quick glossary",next:"Next lesson",src:"Sources",
+    loading:"Loading...",noneA:"No lessons yet",noneASub:"The first lesson shows up here every day at 7am.",
+    noneN:"No editions yet",noneNSub:"The first edition shows up here tomorrow at 7am.",
+    fail:"Could not load",failSub:"Reload the page in a moment.",
+    res:n=>n+(n===1?" result":" results"),nores:"Nothing found",noresSub:"Try another term or clear the search.",
+    noTrack:"No lessons in this track",noTrackSub:"Pick another track or go back to All.",
+    noTag:"No editions on this topic",noTagSub:"Pick another topic or go back to All.",
+    saveErr:"Could not save right now. Try again in a moment.",ownerOnly:"Only the site owner can change this.",
+    progress:(a,b)=>a+" of "+b+" lessons studied",themeL:"Switch light and dark theme",
+    approved:"Approved",draft:"Draft",approve:"Approve edition",backDraft:"Back to draft",
+    lic:"Management lesson",act:"If you lead an IT team",read:"Read at the source",theme:"Theme of the week",postIdea:"Post idea: ",
+    onlyPt:"This edition is available in Portuguese only.",about:"A study and news site on AI, IT management, ITSM and the internet provider market. Content is produced with the help of artificial intelligence from public sources, which are listed in each text. Check the sources before relying on it.",edition:"Edition",loc:"en-US"}
+};
+const S={view:"news",lang:"pt",db:null,canEdit:false,busy:false,err:null,loading:true,loadErr:false,
+  news:{eds:[],sel:null,tag:"all",q:""},less:{eds:[],sel:null,trk:"all",q:""}};
+const $=s=>document.querySelector(s);
+function T(){return UI[S.lang]}
+function el(tag,attrs={},...kids){const e=document.createElement(tag);for(const[k,v]of Object.entries(attrs)){if(k==="style")e.setAttribute("style",v);else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else if(v!==false&&v!=null)e.setAttribute(k,v===true?"":v)}for(const k of kids.flat()){if(k==null||k===false)continue;e.append(k.nodeType?k:document.createTextNode(String(k)))}return e}
+function safeUrl(u){try{const x=new URL(u);return(x.protocol==="https:"||x.protocol==="http:")?x.href:null}catch{return null}}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch{return null}}
+function colorOf(k){let h=0;for(const c of String(k))h=(h*31+c.charCodeAt(0))>>>0;return "var(--t"+(h%6)+")"}
+function paras(t){return String(t||"").split(/\n\n+/).filter(Boolean)}
+function fmtNum(v){return Number(v).toLocaleString(UI[S.lang].loc,{minimumFractionDigits:2,maximumFractionDigits:2})}
+function fmtDate(iso){const[y,m,d]=iso.split("-").map(Number);const loc=UI[S.lang].loc;const dt=new Date(y,m-1,d);const w=dt.toLocaleDateString(loc,{weekday:"short"}).replace(".","");
+  const dm=S.lang==="pt"?String(d).padStart(2,"0")+"/"+String(m).padStart(2,"0"):String(m).padStart(2,"0")+"/"+String(d).padStart(2,"0");return{w,dm,long:dt.toLocaleDateString(loc,{weekday:"long",day:"numeric",month:"long",year:"numeric"})}}
+const SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg>';
+function isDark(){const t=document.documentElement.getAttribute("data-theme");if(t)return t==="dark";return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches}
+function setTheme(t){document.documentElement.setAttribute("data-theme",t);store("radarti-theme",t);render()}
+
+/* ---------- Notícias ---------- */
+function stripLbl(s,re){const x=String(s||"").replace(re,"").trim();return x.charAt(0).toUpperCase()+x.slice(1)}
+function normN(e){const d=e.d;
+  if(d.pt){const tg=typeof d.tag==="string"?{pt:d.tag,en:d.tag}:(d.tag||{});
+    return{pt:d.pt,en:d.en||null,tag:tg,fonte:d.fonte,link:d.link,fontes:d.fontes||[],tema:d.tema}}
+  const it=(((d.secoes||[])[0]||{}).itens||[])[0]||{};const ps=paras(it.oque);const pq=paras(it.porque);
+  const last=ps.length>2&&/incert|ainda não|não se sabe/i.test(ps[ps.length-1])?ps.pop():null;
+  const lede=ps.shift()||"";const blocos=[];
+  if(ps.length)blocos.push({titulo:"Os detalhes",texto:ps.join("\n\n")});
+  if(last)blocos.push({titulo:"O que ainda é incerto",texto:last});
+  const pt={titulo:it.titulo||"",resumo:lede,blocos,licao:stripLbl(pq[0],/^Lição de gestão:\s*/i),acao:stripLbl(pq[1],/^Para quem lidera[^:]*:\s*/i),pergunta:d.pergunta||""};
+  const tema=d.tema&&d.tema.titulo?{pt:d.tema,en:null}:null;
+  return{pt,en:null,tag:{pt:it.tag||"Outros",en:it.tag||"Other"},fonte:it.fonte,link:it.link,fontes:[],tema}}
+function nCache(e){if(!e._n)e._n=normN(e);return e._n}
+function tagKey(e){return String(nCache(e).tag.pt||"Outros")}
+function tagName(e){const t=nCache(e).tag;return String(t[S.lang]||t.pt||"Outros")}
+function allTags(){const m=new Map();S.news.eds.forEach(e=>{const k=tagKey(e),c=m.get(k);m.set(k,{n:(c?c.n:0)+1,name:tagName(e)})});return[...m.entries()].sort((a,b)=>b[1].n-a[1].n).map(x=>({k:x[0],name:x[1].name}))}
+function newsVisible(){const N=S.news;return N.tag==="all"?N.eds:N.eds.filter(e=>tagKey(e)===N.tag)}
+async function setStatus(e,status){if(!S.db||S.busy)return;S.busy=true;render();
+  try{await S.db.doc("edicoes/"+e.id).update({status,statusEm:new Date().toISOString()})}
+  catch(err){S.err=(err&&err.code==="invalid_argument")?T().ownerOnly:T().saveErr}
+  S.busy=false;render()}
+function pick(n){return(S.lang==="en"&&n.en)?n.en:n.pt}
+function renderNewsSearch(main){const N=S.news,q=N.q.toLowerCase(),t=T();const hits=newsVisible().filter(e=>{const n=nCache(e);
+  const flat=o=>o?[o.titulo,o.resumo,o.licao,o.acao,(o.blocos||[]).map(b=>[b.titulo,b.texto,(b.lista||[]).join(" ")].join(" ")).join(" ")].join(" "):"";
+  return[flat(n.pt),flat(n.en),n.fonte,tagKey(e)].join(" ").toLowerCase().includes(q)});
+  main.append(el("div",{class:"head"},el("h2",{},t.res(hits.length)+" - \""+N.q+"\"")));
+  if(!hits.length){main.append(el("div",{class:"empty"},el("strong",{},t.nores),t.noresSub));return}
+  hits.forEach(e=>{const n=nCache(e),c=pick(n);main.append(el("button",{class:"hit",type:"button",style:"--c:"+colorOf(tagKey(e)),onclick:()=>{N.sel=e.id;N.q="";$("#q").value="";render()}},
+    el("span",{class:"label"},fmtDate(e.id).dm+" · "+tagName(e)),el("b",{},c.titulo||e.id),el("span",{},c.resumo||"")))})}
+function renderNews(main){const N=S.news,t=T();
+  if(!N.eds.length){main.append(el("div",{class:"empty"},el("strong",{},t.noneN),t.noneNSub));return}
+  const vis=newsVisible();
+  if(!vis.length){main.append(el("div",{class:"empty"},el("strong",{},t.noTag),t.noTagSub));return}
+  if(N.q){renderNewsSearch(main);return}
+  let e=vis.find(x=>x.id===N.sel);if(!e){e=vis[0];N.sel=e.id}
+  const n=nCache(e),c=pick(n),ok=e.d.status==="aprovado",dt=fmtDate(e.id);
+  const status=el("div",{class:"status"});
+  if(S.canEdit)status.append(el("span",{class:"pill"+(ok?" ok":"")},ok?t.approved:t.draft),ok?el("button",{class:"btn ghost",type:"button",disabled:S.busy,onclick:()=>setStatus(e,"rascunho")},t.backDraft):el("button",{class:"btn",type:"button",disabled:S.busy,onclick:()=>setStatus(e,"aprovado")},t.approve));
+  main.append(el("div",{class:"head"},
+    el("div",{class:"row"},el("div",{class:"kicker"},el("span",{class:"trk",style:"--c:"+colorOf(tagKey(e))},tagName(e)),n.fonte?el("span",{class:"label"},n.fonte):null,el("span",{class:"label"},dt.long)),status),
+    el("h2",{},c.titulo||e.id),c.resumo?el("p",{class:"lede"},c.resumo):null));
+  if(S.err){main.append(el("p",{class:"note",role:"alert"},S.err));S.err=null}
+  if(S.lang==="en"&&!n.en)main.append(el("p",{class:"note"},t.onlyPt));
+  if(c.numeros&&c.numeros.length)main.append(el("section",{"aria-label":t.nums},el("div",{class:"stats"},c.numeros.map(x=>el("div",{class:"stat"},el("b",{},x.valor),el("span",{},x.rotulo))))));
+  (c.blocos||[]).forEach(b=>{const s=el("section",{class:"blk"},b.titulo?el("h3",{},b.titulo):null);paras(b.texto).forEach(p=>s.append(el("p",{},p)));
+    if(b.lista&&b.lista.length)s.append(el("ul",{},b.lista.map(x=>el("li",{},x))));main.append(s)});
+  if(c.licao)main.append(el("section",{class:"call owner"},el("span",{class:"label"},t.lic),el("p",{},c.licao)));
+  if(c.acao)main.append(el("section",{class:"call act"},el("span",{class:"label"},t.act),el("p",{},c.acao)));
+  if(c.pergunta)main.append(el("section",{class:"ask"},el("span",{class:"label"},t.ask),el("p",{},c.pergunta)));
+  const url=safeUrl(n.link);
+  const fs=(n.fontes||[]).map(f=>({t:f.titulo,u:safeUrl(f.url)})).filter(f=>f.u);
+  if(url||fs.length){const items=[];if(url)items.push(el("li",{},el("a",{href:url,target:"_blank",rel:"noopener noreferrer"},t.read+" ↗")));fs.forEach(f=>items.push(el("li",{},el("a",{href:f.u,target:"_blank",rel:"noopener noreferrer"},f.t||f.u))));
+    main.append(el("section",{class:"card src"},el("span",{class:"label"},t.src),el("ul",{},items)))}
+  const tm=n.tema?((S.lang==="en"&&n.tema.en)?n.tema.en:n.tema.pt):null;
+  if(tm&&tm.titulo)main.append(el("section",{class:"card"},el("span",{class:"label"},t.theme),el("h3",{},tm.titulo),paras(tm.texto).map(p=>el("p",{style:"margin:0"},p)),(tm.post&&S.canEdit)?el("p",{style:"margin:0"},el("b",{},t.postIdea),tm.post):null))}
+
+/* ---------- Aulas ---------- */
+function L(d){return d[S.lang]||d.pt||d.en||{}}
+function trackOf(d){const t=d.trilha;if(!t)return{k:"-",n:"-"};if(typeof t==="string")return{k:t,n:t};return{k:t.pt||t.en||"-",n:t[S.lang]||t.pt||t.en||"-"}}
+async function toggleStudied(e){if(!S.db||S.busy)return;S.busy=true;render();
+  try{await S.db.doc("aulas/"+e.id).update({estudada:!e.d.estudada,estudadaEm:new Date().toISOString()})}
+  catch(err){S.err=(err&&err.code==="invalid_argument")?T().ownerOnly:T().saveErr}
+  S.busy=false;render()}
+function renderChart(g,main){if(!g||!g.itens||!g.itens.length)return;
+  const max=Math.max(...g.itens.map(i=>Number(i.valor)||0))||1;
+  const title=(g.titulo&&(g.titulo[S.lang]||g.titulo.pt))||"",unit=(g.unidade&&(g.unidade[S.lang]||g.unidade.pt))||"",nota=(g.nota&&(g.nota[S.lang]||g.nota.pt))||"";
+  const rows=g.itens.map(i=>el("div",{class:"crow"+(i.destaque?" hi":"")},el("span",{class:"nm",title:i.rotulo},i.rotulo),
+    el("div",{class:"tr",role:"img","aria-label":i.rotulo+" "+fmtNum(i.valor)},el("div",{class:"fl",style:"width:"+Math.max(2,(Number(i.valor)/max*100))+"%"})),
+    el("span",{class:"vl"},fmtNum(i.valor))));
+  main.append(el("section",{class:"card"},el("h3",{},title),unit?el("span",{class:"label"},unit):null,el("div",{class:"chart"},rows),nota?el("p",{class:"note"},nota):null))}
+function renderLesson(main){const A=S.less,e=A.eds.find(x=>x.id===A.sel);if(!e)return;const d=e.d,c=L(d),t=T(),tr=trackOf(d),dt=fmtDate(e.id),ok=!!d.estudada;
+  const status=el("div",{class:"status"});
+  if(S.canEdit)status.append(el("span",{class:"pill"+(ok?" ok":"")},ok?t.studied:t.todo),el("button",{class:"btn"+(ok?" ghost":""),type:"button",disabled:S.busy,onclick:()=>toggleStudied(e)},ok?t.unmark:t.mark));
+  main.append(el("div",{class:"head"},
+    el("div",{class:"row"},el("div",{class:"kicker"},d.numero?el("span",{class:"num"},t.lesson+" "+String(d.numero).padStart(2,"0")):null,el("span",{class:"trk",style:"--c:"+colorOf(tr.k)},tr.n),el("span",{class:"label"},dt.long)),status),
+    el("h2",{},c.titulo||e.id),c.resumo?el("p",{class:"lede"},c.resumo):null));
+  if(S.err){main.append(el("p",{class:"note",role:"alert"},S.err));S.err=null}
+  if(c.numeros&&c.numeros.length)main.append(el("section",{"aria-label":t.nums},el("div",{class:"stats"},c.numeros.map(n=>el("div",{class:"stat"},el("b",{},n.valor),el("span",{},n.rotulo))))));
+  renderChart(d.grafico,main);
+  (c.blocos||[]).forEach(b=>{const s=el("section",{class:"blk"},b.titulo?el("h3",{},b.titulo):null);paras(b.texto).forEach(p=>s.append(el("p",{},p)));
+    if(b.lista&&b.lista.length)s.append(el("ul",{},b.lista.map(x=>el("li",{},x))));main.append(s)});
+  if(c.visao_dono)main.append(el("section",{class:"call owner"},el("span",{class:"label"},t.owner),el("p",{},c.visao_dono)));
+  if(c.diretoria&&S.canEdit)main.append(el("section",{class:"call board"},el("span",{class:"label"},t.board),el("p",{},c.diretoria)));
+  if(c.pergunta)main.append(el("section",{class:"ask"},el("span",{class:"label"},t.ask),el("p",{},c.pergunta)));
+  if(c.glossario&&c.glossario.length)main.append(el("section",{class:"card"},el("h3",{},t.gloss),el("dl",{class:"gl"},c.glossario.map(g=>el("div",{},el("dt",{},g.termo),el("dd",{},g.def))))));
+  if(c.proxima)main.append(el("div",{class:"next"},el("span",{class:"label"},t.next),el("span",{},c.proxima)));
+  const fs=(d.fontes||[]).map(f=>({t:f.titulo,u:safeUrl(f.url)})).filter(f=>f.u);
+  if(fs.length)main.append(el("section",{class:"card src"},el("span",{class:"label"},t.src),el("ul",{},fs.map(f=>el("li",{},el("a",{href:f.u,target:"_blank",rel:"noopener noreferrer"},f.t||f.u))))))}
+function renderLessonSearch(main){const A=S.less,q=A.q.toLowerCase(),t=T();const hits=A.eds.filter(e=>{const c=L(e.d);
+  const hay=[c.titulo,c.resumo,c.visao_dono,c.diretoria,(c.blocos||[]).map(b=>[b.titulo,b.texto,(b.lista||[]).join(" ")].join(" ")).join(" "),(c.glossario||[]).map(g=>g.termo+" "+g.def).join(" ")].join(" ").toLowerCase();return hay.includes(q)});
+  main.append(el("div",{class:"head"},el("h2",{},t.res(hits.length)+" - \""+A.q+"\"")));
+  if(!hits.length){main.append(el("div",{class:"empty"},el("strong",{},t.nores),t.noresSub));return}
+  hits.forEach(e=>{const c=L(e.d),tr=trackOf(e.d);main.append(el("button",{class:"hit",type:"button",style:"--c:"+colorOf(tr.k),onclick:()=>{A.sel=e.id;A.q="";$("#q").value="";render()}},
+    el("span",{class:"label"},(e.d.numero?t.lesson+" "+String(e.d.numero).padStart(2,"0")+" · ":"")+fmtDate(e.id).dm),el("b",{},c.titulo||e.id),el("span",{},c.resumo||"")))})}
+function renderLessons(main){const A=S.less,t=T();
+  if(!A.eds.length){main.append(el("div",{class:"empty"},el("strong",{},t.noneA),t.noneASub));return}
+  if(A.q){renderLessonSearch(main);return}
+  const cur=A.eds.find(x=>x.id===A.sel);
+  if(A.trk!=="all"&&cur&&trackOf(cur.d).k!==A.trk){const m=A.eds.find(x=>trackOf(x.d).k===A.trk);
+    if(m)A.sel=m.id;else{main.append(el("div",{class:"empty"},el("strong",{},t.noTrack),t.noTrackSub));return}}
+  renderLesson(main)}
+
+/* ---------- Estrutura comum ---------- */
+function renderStrip(){const s=$("#strip");s.replaceChildren();const V=S.view==="news"?S.news:S.less;const t=T();
+  (S.view==="news"?newsVisible():V.eds).forEach(e=>{const d=fmtDate(e.id);let top,sub;
+    if(S.view==="news"){const ok=e.d.status==="aprovado";top=el("small",{},S.canEdit?el("span",{class:"dot"+(ok?" ok":"")}):null,d.w);sub=d.dm}
+    else{const n=e.d.numero?String(e.d.numero).padStart(2,"0"):"";top=el("small",{},S.canEdit?el("span",{class:"dot"+(e.d.estudada?" ok":"")}):null,d.w);sub=n?t.lesson+" "+n:d.dm}
+    s.append(el("button",{class:"ed",type:"button","aria-pressed":String(V.sel===e.id&&!V.q),onclick:()=>{V.sel=e.id;V.q="";$("#q").value="";render()}},top,sub))})}
+function renderFilters(){const f=$("#filters");f.replaceChildren();const t=T();
+  const mk=(on,k,n,c,fn)=>el("button",{class:"chip",type:"button","aria-pressed":String(on),style:c?"--c:"+c:"",onclick:fn},c?el("i"):null,n);
+  if(S.view==="news"){const N=S.news;f.append(mk(N.tag==="all","all",t.all,null,()=>{N.tag="all";render()}));allTags().forEach(g=>f.append(mk(N.tag===g.k,g.k,g.name,colorOf(g.k),()=>{N.tag=g.k;render()})))}
+  else{const A=S.less,seen=new Map();A.eds.forEach(e=>{const x=trackOf(e.d);if(!seen.has(x.k))seen.set(x.k,x.n)});
+    f.append(mk(A.trk==="all","all",t.all,null,()=>{A.trk="all";render()}));seen.forEach((n,k)=>f.append(mk(A.trk===k,k,n,colorOf(k),()=>{A.trk=k;render()})))}}
+function paintChrome(){const t=T(),news=S.view==="news";
+  document.documentElement.lang=S.lang==="pt"?"pt-BR":"en";
+  $("#tnews").textContent=t.tabN;$("#tless").textContent=t.tabA;
+  $("#tnews").setAttribute("aria-selected",String(news));$("#tless").setAttribute("aria-selected",String(!news));
+  $("#sub").textContent=news?t.subN:t.subA;
+  $("#lq").textContent=news?t.searchN:t.searchA;$("#q").placeholder=news?t.phN:t.phA;
+  $("#q").value=(news?S.news.q:S.less.q);
+  $("#ledtitle").textContent=news?t.editions:t.lessons;
+  $("#lpt").setAttribute("aria-pressed",String(S.lang==="pt"));$("#len").setAttribute("aria-pressed",String(S.lang==="en"));
+  const p=$("#prog");p.replaceChildren();
+  if(!news&&S.canEdit){const done=S.less.eds.filter(e=>e.d.estudada).length,tot=S.less.eds.length;
+    if(tot)p.append(el("div",{class:"track"},el("div",{class:"fill",style:"width:"+Math.round(done/tot*100)+"%"})),el("span",{},t.progress(done,tot)))}
+  const b=$("#theme");b.innerHTML=isDark()?SUN:MOON;b.setAttribute("aria-label",t.themeL);b.setAttribute("title",t.themeL)}
+function render(){$("#foot").textContent=T().about;paintChrome();renderStrip();renderFilters();const main=$("#main");main.replaceChildren();const t=T();
+  if(S.loadErr){main.append(el("div",{class:"empty"},el("strong",{},t.fail),t.failSub));return}
+  if(S.loading){main.append(el("div",{class:"empty"},el("strong",{},t.loading)));return}
+  if(S.view==="news")renderNews(main);else renderLessons(main)}
+function setView(v,push){S.view=v;if(push){try{history.replaceState(null,"","#"+(v==="news"?"noticias":"aulas"))}catch{}}store("radarti-view",v);render()}
+
+$("#tnews").addEventListener("click",()=>setView("news",true));
+$("#tless").addEventListener("click",()=>setView("less",true));
+$("#lpt").addEventListener("click",()=>{S.lang="pt";store("radarti-lang","pt");render()});
+$("#len").addEventListener("click",()=>{S.lang="en";store("radarti-lang","en");render()});
+$("#theme").addEventListener("click",()=>setTheme(isDark()?"light":"dark"));
+let tm;$("#q").addEventListener("input",ev=>{clearTimeout(tm);tm=setTimeout(()=>{(S.view==="news"?S.news:S.less).q=ev.target.value.trim();render()},200)});
+
+(function init(){
+  S.lang="pt";
+  const st=store("radarti-theme");if(st==="light"||st==="dark")document.documentElement.setAttribute("data-theme",st);
+  const h=(location.hash||"").replace("#","");
+  if(h==="aulas")S.view="less";else if(h==="noticias")S.view="news";else{const v=store("radarti-view");S.view=v==="less"?"less":"news"}
+  render();
+})();
+
+(async()=>{
+  S.canEdit=false;
+  try{
+    const [a,b]=await Promise.all([fetch("data/edicoes.json").then(r=>{if(!r.ok)throw 0;return r.json()}),fetch("data/aulas.json").then(r=>{if(!r.ok)throw 0;return r.json()})]);
+    S.news.eds=a;S.less.eds=b;
+    S.news.sel=a[0]?a[0].id:null;S.less.sel=b[0]?b[0].id:null;
+    S.loading=false;render();
+  }catch(e){S.loading=false;S.loadErr=true;render()}
+})();
+</script>
+
+</body></html>
